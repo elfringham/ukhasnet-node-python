@@ -18,4 +18,3 @@ config.sync_value_1 = 0x2d
 config.sync_value_2 = 0xaa
 config.packet_config_1.variable_length = True
 config.packet_config_1.crc = True
-config.rssi_threshold = 180

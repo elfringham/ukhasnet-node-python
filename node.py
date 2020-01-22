@@ -25,8 +25,8 @@ class UKHASNetNode(object):
         self.counter = 'a'
         self.last_rssi = None
         self.http = requests.Session()
-        self.rfm69 = RFM69(reset_pin=21,
-                           dio0_pin=20,
+        self.rfm69 = RFM69(reset_pin=20,
+                           dio0_pin=26,
                            spi_channel=0,
                            config=rfm_config)
 
@@ -39,10 +39,10 @@ class UKHASNetNode(object):
         return current
 
     def send_our_packet(self):
-        if not self.config.getboolean('node', 'transmit'):
-            return
         packet = self.generate_packet()
         self.submit_packet(packet)
+        if not self.config.getboolean('node', 'transmit'):
+            return
         self.broadcast_packet(packet)
 
     def get_temperature(self):
@@ -56,7 +56,7 @@ class UKHASNetNode(object):
     def generate_packet(self):
         counter = self.get_packet_counter()
         temp = self.get_temperature()
-        packet = "3" + counter
+        packet = "0" + counter
         if self.location:
             packet += "L" + self.location
         if temp:
@@ -123,7 +123,8 @@ class UKHASNetNode(object):
         self.rfm69.send_packet(packet, preamble=0.05)
 
     def run(self):
-        if self.config.getfloat('node', 'rssi_threshold') is not None:
+        if 0:
+        #if self.config.getfloat('node', 'rssi_threshold') is not None:
             self.rfm69.set_rssi_threshold(self.config.getfloat('node', 'rssi_threshold'))
         else:
             self.rfm69.calibrate_rssi_threshold()
@@ -148,7 +149,8 @@ class UKHASNetNode(object):
                 self.send_our_packet()
                 last_sent = time()
 
-            if self.config.getfloat('node', 'rssi_threshold') is None:
+            if 1:
+            #if self.config.getfloat('node', 'rssi_threshold') is None:
                 if time() - last_calibration > 3600 or self.rfm69.rx_restarts > 5:
                     self.rfm69.calibrate_rssi_threshold()
                     last_calibration = time()
